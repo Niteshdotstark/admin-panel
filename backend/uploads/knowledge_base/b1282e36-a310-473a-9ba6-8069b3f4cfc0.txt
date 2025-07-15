@@ -1,0 +1,368 @@
+/*  case-studies css  start*/
+:root {
+	--accent-color: #f97316;
+	--light-bg: #f8fafc;
+	--card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	--hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.case-hero-section {
+	position: relative;
+	background-color: #fff;
+	min-height: 300px;
+	overflow: hidden;
+	background-image: url(/Content/images/case-banner.jpg);
+	background-position: center;
+	background-size: cover;
+}
+
+/* Search Input */
+.case-study .search-input-wrapper {
+	position: relative;
+}
+
+	.case-study .search-input-wrapper .search-input {
+		border: 2px solid #e2e8f0;
+		border-radius: 8px;
+		padding: 0.75rem 1rem 0.75rem 3rem;
+		transition: all 0.3s ease;
+	}
+
+	.case-study .search-input-wrapper .search-icon {
+		position: absolute;
+		left: 1rem;
+		top: 50%;
+		transform: translateY(-50%);
+		color: var(--secondary-color);
+		pointer-events: none;
+	}
+/* Results Header */
+.case-study .results-header {
+	display: flex;
+	align-items: end;
+	justify-content: flex-start;
+	padding: 0 0.5rem;
+}
+
+.case-study .results-count {
+	font-size: 1.1rem;
+	color: var(--primary-color);
+	transition: all 0.3s ease;
+}
+
+.case-study .showing-count {
+	font-size: 0.9rem;
+}
+/* Case Study Cards */
+.case-study .case-study-card {
+	border: none;
+	border-radius: 8px;
+	box-shadow: var(--card-shadow);
+	transition: all 0.3s ease;
+	height: 100%;
+	overflow: hidden;
+}
+
+	.case-study .case-study-card:hover {
+		transform: translateY(-4px);
+		box-shadow: var(--hover-shadow);
+	}
+
+	.case-study .case-study-card .card-body {
+		padding: 1.5rem;
+	}
+/* Company Logos */
+		.case-study .case-study-card .card-body .company-logo {
+			height: 125px;
+			display: flex;
+			align-items: center;
+		}
+
+		.case-study .case-study-card .card-body .logo-placeholder {
+			height: 119px;
+			max-width: 374px;
+		}
+
+			.case-study .case-study-card .card-body .logo-placeholder .logo-img img {
+				width: 307px;
+				height: 119px;
+			}
+
+		.case-study .case-study-card .card-body .golds-gym-logo {
+			background: #153e4d;
+			color: white;
+			font-size: 1.8rem;
+		}
+/* Card Titles */
+		.case-study .case-study-card .card-body .card-title {
+			font-size: 14px;
+			font-weight: 100;
+			line-height: 1.4;
+			color: #1e293b;
+			margin-bottom: 1rem;
+		}
+
+/* Tags */
+		.case-study .case-study-card .card-body .tags-container {
+			display: flex;
+			flex-wrap: wrap;
+		  /*gap: 0.5rem;*/
+		}
+
+		.case-study .case-study-card .card-body .tag {
+			display: inline-block;
+			padding: 0.4rem 0.8rem;
+			border-radius: 20px;
+			font-size: 0.75rem;
+			font-weight: 500;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			white-space: nowrap;
+		}
+
+/* CTA Button */
+		.case-study .case-study-card .card-body .btn-cta {
+			background: linear-gradient(135deg, var(--accent-color) 0%, #ef5d25 100%);
+			border: none;
+			color: white;
+			padding: 0.7rem 1.5rem;
+			border-radius: 8px;
+			font-weight: 500;
+			text-transform: none;
+			transition: all 0.3s ease;
+			width: 100%;
+		}
+
+.case-study .case-study-card .card-body .btn-cta:hover {
+	background: linear-gradient(135deg, #ef5d25 0%, #dc2626 100%);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(#ef5d25);
+	color: white;
+}
+
+/* Load More Button */
+.case-study .load-more-section {
+	margin-top: 3rem;
+}
+
+.case-study .btn-load-more {
+	min-width: 140px;
+	background: linear-gradient(to right, #fc4906, #fc0d5e);
+	border-radius: 28px;
+	color: #fff;
+	outline: 0 !important;
+	font-weight: 500;
+}
+
+	.case-study .btn-load-more:hover {
+		background: var(--accent-color);
+		color: white;
+		box-shadow: 0 6px 20px rgba(249, 115, 22, 0.3);
+	}
+
+	.case-study .btn-load-more:disabled {
+		opacity: 0.7;
+		cursor: not-allowed;
+		transform: none;
+	}
+
+.case-study .load-more-spinner {
+	margin-left: 0.5rem;
+}
+
+/* Hidden Cards */
+.hidden-card {
+	display: none;
+}
+/* No Results */
+.no-results {
+	background: white;
+	border-radius: 8px;
+	margin: 2rem 0;
+}
+
+	.no-results i {
+		opacity: 0.5;
+	}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.case-study .case-study-card .card-body {
+		padding: 1.2rem;
+	}
+
+		.case-study .case-study-card .card-body .tags-container {
+			margin-bottom: 1rem !important;
+		}
+
+		.case-study .case-study-card .card-body .tag {
+			font-size: 0.7rem;
+			padding: 0.3rem 0.6rem;
+		}
+
+	.case-study .results-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.25rem;
+	}
+}
+
+@media (max-width: 576px) {
+	.case-study .case-study-card .card-body .logo-placeholder {
+		font-size: 1.1rem;
+	}
+
+	.case-study .case-study-card .card-body .golds-gym-logo {
+		font-size: 1.3rem;
+	}
+
+	.case-study .case-study-card .card-body .card-title {
+		font-size: 1rem;
+	}
+
+	.case-study .btn-load-more {
+		padding: 0.75rem 1.5rem;
+		font-size: 0.9rem;
+	}
+}
+.case-study .case-study-card .card-body .result-card {
+	display: none;
+	opacity: 0;
+	transform: translateY(20px);
+	transition: all 0.3s ease, transform 0.3s ease;
+}
+
+/* case details css start */
+.case-cta-banner {
+	background: linear-gradient(to right, #fc4906 0%, #fc0d5e 100%);
+	-webkit-background-clip: border-box;
+	-webkit-text-fill-color: #fff;
+	border-radius: 50px;
+	padding: 10px 20px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	max-width: 800px;
+	margin: 15px auto 130px;
+}
+
+	.case-cta-banner .cta-button {
+		background-color: #000;
+		color: #fff;
+		border-radius: 50px;
+		padding: 10px 20px;
+		text-decoration: none;
+		font-weight: 600;
+		transition: background-color 0.3s;
+	}
+
+		.case-cta-banner .cta-button:hover {
+			background-color: #333;
+			color: #fff;
+		}
+
+	.case-cta-banner .cta-text {
+		margin: 0;
+		font-weight: 500;
+	}
+
+@media (max-width: 768px) {
+	.case-cta-banner {
+		display: block;
+	}
+
+		.case-cta-banner .cta-button {
+			background: none;
+			border-radius: 50px;
+			padding: 0;
+			text-decoration: underline;
+		}
+}
+.case-studies-details h1 {
+	font-size: 40px;
+}
+
+.case-studies-details .story-img {
+	width: 100%;
+	max-height: 600px;
+	margin-bottom: 1rem;
+	border-radius: 5px;
+	object-fit: cover;
+}
+
+.case-studies-details .subheading {
+	font-size: 32px;
+	font-family: 'Poppins', sans-serif;
+}
+
+.case-studies-details div div h3 {
+	font-size: 20px;
+	line-height: 30px;
+	color: #000;
+	font-weight: 700;
+	font-family: 'Poppins', sans-serif;
+}
+
+.case-studies-details div div p {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 400;
+	font-size: 16px;
+}
+
+.case-studies-details .check-list {
+	list-style: none;
+	padding-left: 20px;
+	margin-bottom: 2rem;
+}
+
+.case-studies-details div div ul {
+	list-style: unset;
+}
+.case-studies-details div div ul li{
+	font-size:16px;
+}
+.case-studies-details .check-list li {
+	position: relative;
+	padding-left: 2rem;
+	margin-bottom: 1rem;
+}
+
+	.case-studies-details .check-list li::before {
+		content: '\f633'; /* Unicode for bi-check2 */
+		font-family: 'bootstrap-icons';
+		font-size: 25px; /* Match the image size */
+		color: #fc4906; /* Orange */
+		position: absolute;
+		left: 0;
+		top: 0;
+		line-height: 1;
+	}
+
+.case-studies-details .meta-box .sidebar-text {
+	color: var(--bs-black);
+	text-decoration: none;
+	font-weight: 550;
+	width: 100%;
+	border-top: 1px solid #adb5bd;
+	padding: 10px 0;
+	font-size: 14px;
+	text-transform: uppercase;
+}
+
+	.case-studies-details .meta-box .sidebar-text p,
+	.case-studies-details .meta-box .sidebar-text p a {
+		color: #808080a3;
+		font-size: 16px;
+		text-transform: capitalize;
+	}
+
+	.case-studies-details .meta-box .sidebar-text a:hover {
+		text-decoration: underline;
+	}
+
+@media (min-width: 992px) {
+	.col-lg-4.position-relative {
+		position: relative;
+	}
+}
+/* case details css end */
