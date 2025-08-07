@@ -71,3 +71,10 @@ class DatabaseResponse(DatabaseBase):
     created_at: datetime
     class Config:
         orm_mode = True
+
+
+class ChatRequest(BaseModel):
+    message: str
+
+class ChatResponse(BaseModel):
+    response: str

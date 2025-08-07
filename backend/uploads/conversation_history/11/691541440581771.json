@@ -1,0 +1,18 @@
+[
+  {
+    "type": "human",
+    "human": "Tell me about Dotstark ?"
+  },
+  {
+    "type": "ai",
+    "ai": "Based on the provided context, DotStark is a company that offers web and mobile application development services. They pride themselves on their exceptional problem-solving skills, proactive methods, and appealing front-end designs. Their clients have praised their ability to deliver beyond expectations, with testimonials highlighting their creative problem-solving approaches, agile methods, technical expertise, and future vision. With years of experience and expertise, DotStark facilitates a smooth development process and successful collaboration, ensuring top-quality results."
+  },
+  {
+    "type": "human",
+    "human": "hi"
+  },
+  {
+    "type": "ai",
+    "ai": "Hello! It's great to chat with you. I noticed you're interested in DotStark, a company that not only transforms projects and careers but also dedicates itself to uplifting others through the DotStark Elysian Foundation. What would you like to know about DotStark or its initiatives?"
+  }
+]

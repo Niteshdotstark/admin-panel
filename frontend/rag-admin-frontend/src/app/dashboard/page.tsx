@@ -42,7 +42,6 @@ export default function Dashboard() {
   const [updatedFbUrl, setUpdatedFbUrl] = useState('');
   const [updatedInstaUrl, setUpdatedInstaUrl] = useState('');
   const router = useRouter();
-
   // States for the multi-step tenant creation form
   const [showTenantCreationForm, setShowTenantCreationForm] = useState(false);
   const [showOptionalTenantFields, setShowOptionalTenantFields] = useState(false);
@@ -53,19 +52,16 @@ export default function Dashboard() {
     setSelectedFile(null);
     console.log('Cleared selectedFile because category is:', category);
   }
-}, [category]);
-
+  }, [category]);
   // Clear newUrl when category is not 'url'
   useEffect(() => {
     if (category !== 'url') {
       setNewUrl('');
     }
   }, [category]);
-
   useEffect(() => {
   console.log('Knowledge Base Items:', knowledgeBaseItems);
-}, [knowledgeBaseItems]);
-
+  }, [knowledgeBaseItems]);
   // Fetch tenants on initial load
   useEffect(() => {
     const fetchData = async () => {
@@ -96,7 +92,6 @@ export default function Dashboard() {
 
     fetchData();
   }, []);
-
   // Fetch knowledge base items when active tenant changes
   useEffect(() => {
     if (activeTenant !== null) {
@@ -129,7 +124,6 @@ export default function Dashboard() {
       setKnowledgeBaseItems([]);
     }
   }, [activeTenant]);
-
   // Handler to open the tenant creation form
   const handleOpenCreateTenantForm = () => {
     setNewTenantName('');
@@ -139,7 +133,6 @@ export default function Dashboard() {
     setShowOptionalTenantFields(false);
     setShowTenantCreationForm(true);
   };
-
   // Handler to close/cancel the tenant creation form
   const handleCancelTenantCreation = () => {
     setNewTenantName('');
@@ -149,7 +142,6 @@ export default function Dashboard() {
     setShowOptionalTenantFields(false);
     setShowTenantCreationForm(false);
   };
-
   // Handler for the first step of tenant creation (name input)
   const handleInitiateTenantCreation = () => {
     if (!newTenantName.trim()) {
@@ -159,7 +151,6 @@ export default function Dashboard() {
     setError('');
     setShowOptionalTenantFields(true);
   };
-
   // Handler for the final step of tenant creation (submitting all data)
   const handleFinalCreateTenant = async () => {
     if (!newTenantName.trim()) {
@@ -199,7 +190,6 @@ export default function Dashboard() {
       setIsLoading(false);
     }
   };
-
  // Handler to update tenant
   const handleUpdateTenant = async (tenantId: number) => {
     if (!updatedName.trim()) {
@@ -243,7 +233,6 @@ export default function Dashboard() {
       setIsLoading(false);
     }
   };
-
   // Handler to logout
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -256,69 +245,83 @@ export default function Dashboard() {
       setUpdatedFbUrl(tenant.fb_url || '');
       setUpdatedInstaUrl(tenant.insta_url || '');
   };
-
-    // Handler to close/cancel the tenant edit form
+  // Handler to close/cancel the tenant edit form
   const handleCancelEditTenant = () => {
       setEditingTenant(null);
       setUpdatedName('');
       setUpdatedFbUrl('');
       setUpdatedInstaUrl('');
       setError('');
-    };
-
+  };
   // Handler to add a knowledge base item
-  const handleAddItem = async () => {
+const handleAddItem = async () => {
+    // Validation code...
     if (!category || (category === 'url' && !newUrl.trim()) || ((category === 'file' || category === 'database') && !selectedFile)) {
-      setError("Please select a type and provide the required input.");
-      return;
+        setError("Please select a type and provide the required input.");
+        return;
     }
 
     try {
-      setIsLoading(true);
-      setError('');
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication token not found. Please log in.');
-        setIsLoading(false);
-        return;
-      }
-console.log('Selected File:', selectedFile);
-      const formData = new FormData();
-      if (category === 'url') {
-        formData.append('url', newUrl);
-      } else {
-        formData.append('file', selectedFile);
-      }
-      formData.append('category', category);
-
-      const response = await axios.post(`${API_URL}/tenants/${activeTenant}/knowledge_base_items/`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
+        setIsLoading(true);
+        setError('');
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setError('Authentication token not found. Please log in.');
+            setIsLoading(false);
+            return;
         }
-      });
 
-      // Refresh knowledge base items
-      const itemsRes = await axios.get(`${API_URL}/tenants/${activeTenant}/knowledge_base_items/`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setKnowledgeBaseItems(itemsRes.data);
-      setNewUrl('');
-      setSelectedFile(null);
-      setCategory('');
+        // Updated logic to call different endpoints based on category
+        if (category === 'url') {
+            const formData = new FormData();
+            formData.append('url', newUrl);
+
+            await axios.post(`${API_URL}/tenants/${activeTenant}/knowledge_base_items/add_url`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+        } else {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('category', category);
+
+            await axios.post(`${API_URL}/tenants/${activeTenant}/knowledge_base_items/`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+        }
+
+        // Refresh knowledge base items
+        const itemsRes = await axios.get(`${API_URL}/tenants/${activeTenant}/knowledge_base_items/`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        setKnowledgeBaseItems(itemsRes.data);
+        setNewUrl('');
+        setSelectedFile(null);
+        setCategory('');
     } catch (err: any) {
-      console.error("Failed to add item:", err.response?.data || err.message);
-      setError('Failed to add item. ' + (err.response?.data?.detail || 'Please try again.'));
+        console.error("Failed to add item:", err.response?.data || err.message);
+        setError('Failed to add item. ' + (err.response?.data?.detail || 'Please try again.'));
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
-
+};
+  
   return (
     <main className="max-w-6xl mx-auto mt-8 p-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Multi-Tenant Dashboard</h1>
         <div className="flex items-center space-x-4">
+          <a
+      href="/Chat"
+      className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
+    >
+      Open Chat
+    </a>
           <button
             onClick={handleOpenCreateTenantForm}
             className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"

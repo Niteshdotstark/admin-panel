@@ -1,11 +1,10 @@
-// components/AuthForm.tsx
 'use client';
 
 import { useState, FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { registerUser, loginUser } from '@/lib/api'; // Make sure registerUser is updated later
-import { EnvelopeIcon, LockClosedIcon, UserIcon, PhoneIcon, HomeIcon } from '@heroicons/react/24/outline'; // Import new icons
+import { registerUser, loginUser } from '@/lib/api';
+import { EnvelopeIcon, LockClosedIcon, UserIcon, PhoneIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface AuthFormProps {
@@ -19,7 +18,6 @@ export default function AuthForm({ type }: AuthFormProps) {
   const [username, setUsername] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
-
   const [error, setError] = useState('');
   const router = useRouter();
   const { login } = useAuth();
@@ -28,11 +26,11 @@ export default function AuthForm({ type }: AuthFormProps) {
     mutationFn: type === 'register' ? registerUser : loginUser,
     onSuccess: (data) => {
       if (type === 'login') {
+        // The backend now returns a 'user' object in the response
         login(data.access_token, data.user.email);
         router.push('/dashboard');
       } else {
-        // For successful registration, redirect to login page
-        router.push('/login?registered=true'); // Added query param for confirmation
+        router.push('/login?registered=true');
       }
     },
     onError: (err: any) => {
@@ -50,7 +48,7 @@ export default function AuthForm({ type }: AuthFormProps) {
       data = {
         ...data,
         username,
-        phone_number: phoneNumber, // Use snake_case for backend
+        phone_number: phoneNumber,
         address,
       };
     }
@@ -101,7 +99,7 @@ export default function AuthForm({ type }: AuthFormProps) {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full outline-none"
-                required // Make username required for registration
+                required
               />
             </div>
 
@@ -109,12 +107,11 @@ export default function AuthForm({ type }: AuthFormProps) {
             <div className="flex items-center border rounded-md p-2">
               <PhoneIcon className="h-5 w-5 text-gray-400 mr-2" />
               <input
-                type="tel" // Use type="tel" for phone numbers
-                placeholder="Phone Number (e.g., +91-1234567890)"
+                type="tel"
+                placeholder="Phone Number"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 className="w-full outline-none"
-                // Optional: add pattern for validation: pattern="[0-9]{10}"
               />
             </div>
 
@@ -125,8 +122,8 @@ export default function AuthForm({ type }: AuthFormProps) {
                 placeholder="Address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full outline-none resize-y min-h-[60px]" // resize-y allows vertical resize
-                rows={3} // Initial rows
+                className="w-full outline-none resize-y min-h-[60px]"
+                rows={3}
               />
             </div>
           </>

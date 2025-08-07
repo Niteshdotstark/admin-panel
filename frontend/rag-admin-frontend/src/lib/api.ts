@@ -2,10 +2,13 @@ import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+// Updated interface to include new registration fields
 export interface RegisterData {
   email: string;
   password: string;
-  tenant_name?: string;
+  username: string;
+  phone_number?: string;
+  address?: string;
 }
 
 export interface LoginData {
@@ -13,6 +16,7 @@ export interface LoginData {
   password: string;
 }
 
+// The registerUser function now accepts the new fields
 export const registerUser = async (data: RegisterData) => {
   const response = await axios.post(`${API_URL}/users/`, data);
   return response.data;
@@ -28,4 +32,3 @@ export const loginUser = async (data: LoginData) => {
   );
   return response.data;
 };
-
