@@ -19,7 +19,14 @@ interface ChatMessage {
   timestamp: string;
   sources?: string[];
 }
-
+interface ApiError {
+  response?: {
+    data?: {
+      detail?: string;
+    };
+  };
+  message?: string;
+}
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export default function Chat() {
@@ -53,8 +60,9 @@ export default function Chat() {
         } else {
           setError('No organization found for your account. Please create one.');
         }
-      } catch (err: any) {
-        setError('Failed to load organization. ' + (err.response?.data?.detail || 'Please try again.'));
+      }  catch (err: unknown) {
+        const error = err as ApiError;
+        setError('Failed to load organization. ' + (error.response?.data?.detail || 'Please try again.'));
       }
     };
 
@@ -109,8 +117,9 @@ export default function Chat() {
       };
 
       setMessages((prev) => [...prev, botMessage]);
-    } catch (err: any) {
-      setError('Failed to get response. ' + (err.response?.data?.detail || 'Please try again.'));
+    } catch (err: unknown) {
+      const error = err as ApiError;
+      setError('Failed to get response. ' + (error.response?.data?.detail || 'Please try again.'));
     } finally {
       setIsLoading(false);
     }

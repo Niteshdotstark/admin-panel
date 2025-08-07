@@ -10,6 +10,18 @@ import { useAuth } from '@/contexts/AuthContext';
 interface AuthFormProps {
   type: 'register' | 'login';
 }
+type RegisterData = {
+  email: string;
+  password: string;
+  username: string;
+  phone_number: string;
+  address: string;
+};
+
+type LoginData = {
+  email: string;
+  password: string;
+};
 
 export default function AuthForm({ type }: AuthFormProps) {
   const [email, setEmail] = useState('');
@@ -21,40 +33,46 @@ export default function AuthForm({ type }: AuthFormProps) {
   const [error, setError] = useState('');
   const router = useRouter();
   const { login } = useAuth();
-
+ 
   const mutation = useMutation({
-    mutationFn: type === 'register' ? registerUser : loginUser,
+    mutationFn: async (data: LoginData | RegisterData) => {
+      if (type === 'register') {
+        return registerUser(data as RegisterData);
+      } else {
+        return loginUser(data as LoginData);
+      }
+    },
     onSuccess: (data) => {
       if (type === 'login') {
-        // The backend now returns a 'user' object in the response
         login(data.access_token, data.user.email);
         router.push('/dashboard');
       } else {
         router.push('/login?registered=true');
       }
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { detail?: string } } }) => {
       setError(err.response?.data?.detail || 'An error occurred');
     },
   });
 
-  const handleSubmit = (e: FormEvent) => {
+   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setError('');
 
-    let data: any = { email, password };
-
     if (type === 'register') {
-      data = {
-        ...data,
+      const registerData: RegisterData = {
+        email,
+        password,
         username,
         phone_number: phoneNumber,
         address,
       };
+      mutation.mutate(registerData);
+    } else {
+      const loginData: LoginData = { email, password };
+      mutation.mutate(loginData);
     }
-    mutation.mutate(data);
   };
-
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-md shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">

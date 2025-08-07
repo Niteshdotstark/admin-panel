@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import axios, { isAxiosError} from 'axios';
 
 // Define interfaces for data structures
 interface Tenant {
@@ -23,6 +22,15 @@ interface KnowledgeBaseItem {
   created_at: string;
 }
 
+interface ApiError {
+  response?: {
+    data?: {
+      detail?: string;
+    };
+  };
+  message?: string;
+}
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export default function Dashboard() {
@@ -41,7 +49,6 @@ export default function Dashboard() {
   const [updatedName, setUpdatedName] = useState('');
   const [updatedFbUrl, setUpdatedFbUrl] = useState('');
   const [updatedInstaUrl, setUpdatedInstaUrl] = useState('');
-  const router = useRouter();
   // States for the multi-step tenant creation form
   const [showTenantCreationForm, setShowTenantCreationForm] = useState(false);
   const [showOptionalTenantFields, setShowOptionalTenantFields] = useState(false);
@@ -82,9 +89,10 @@ export default function Dashboard() {
         if (tenantsRes.data.length > 0) {
           setActiveTenant(tenantsRes.data[0].id);
         }
-      } catch (err: any) {
-        console.error("Failed to load initial data:", err.response?.data || err.message);
-        setError('Failed to load data. ' + (err.response?.data?.detail || 'Please try again.'));
+      } catch (err) {
+    const error = err as ApiError;
+    console.error("Failed to load initial data:", error.response?.data || error.message);
+    setError('Failed to load data. ' + (error.response?.data?.detail || 'Please try again.'));
       } finally {
         setIsLoading(false);
       }
@@ -111,9 +119,14 @@ export default function Dashboard() {
             headers: { Authorization: `Bearer ${token}` }
           });
           setKnowledgeBaseItems(itemsRes.data);
-        } catch (err: any) {
-          console.error("Failed to load tenant-specific data:", err.response?.data || err.message);
-          setError('Failed to load tenant data. ' + (err.response?.data?.detail || 'Please try again.'));
+        } catch (err: unknown) {
+  if (isAxiosError(err)) {
+    console.error("Failed to load tenant-specific data:", err.response?.data || err.message);
+    setError('Failed to load tenant data. ' + (err.response?.data?.detail || 'Please try again.'));
+  } else {
+    console.error("Failed to load tenant-specific data:", err);
+    setError('Failed to load tenant data. Please try again.');
+  }
         } finally {
           setIsLoading(false);
         }
@@ -183,10 +196,15 @@ export default function Dashboard() {
       setActiveTenant(response.data.id);
       handleCancelTenantCreation();
       alert(`Organization "${response.data.name}" created successfully!`);
-    } catch (err: any) {
-      console.error("Error creating organization:", err.response?.data || err.message);
-      setError('Failed to create organization. ' + (err.response?.data?.detail || 'Please try again.'));
-    } finally {
+   } catch (err: unknown) {
+  if (isAxiosError(err)) {
+    console.error("Error creating organization:", err.response?.data || err.message);
+    setError('Failed to create organization. ' + (err.response?.data?.detail || 'Please try again.'));
+  } else {
+    console.error("Error creating organization:", err);
+    setError('Failed to create organization. Please try again.');
+  }
+}finally {
       setIsLoading(false);
     }
   };
@@ -226,17 +244,17 @@ export default function Dashboard() {
       setTenants(tenantsRes.data);
       handleCancelEditTenant();
       alert(`Organization "${response.data.name}" updated successfully!`);
-    } catch (err: any) {
-      console.error("Error updating organization:", err.response?.data || err.message);
-      setError('Failed to update organization. ' + (err.response?.data?.detail || 'Please try again.'));
-    } finally {
+    } catch (err: unknown) {
+  if (isAxiosError(err)) {
+    console.error("Error updating organization:", err.response?.data || err.message);
+    setError('Failed to update organization. ' + (err.response?.data?.detail || 'Please try again.'));
+  } else {
+    console.error("Error updating organization:", err);
+    setError('Failed to update organization. Please try again.');
+  }
+} finally {
       setIsLoading(false);
     }
-  };
-  // Handler to logout
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    router.push('/login');
   };
   // Handler to open the tenant edit form
   const handleOpenEditTenantForm = (tenant: Tenant) => {
@@ -255,62 +273,84 @@ export default function Dashboard() {
   };
   // Handler to add a knowledge base item
 const handleAddItem = async () => {
-    // Validation code...
-    if (!category || (category === 'url' && !newUrl.trim()) || ((category === 'file' || category === 'database') && !selectedFile)) {
-        setError("Please select a type and provide the required input.");
-        return;
+  // Validation
+  if (!category) {
+    setError('Please select a type.');
+    return;
+  }
+  if (category === 'url' && !newUrl.trim()) {
+    setError('Please provide a URL.');
+    return;
+  }
+  if ((category === 'file' || category === 'database') && !selectedFile) {
+    setError('Please select a file.');
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+    setError('');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('Authentication token not found. Please log in.');
+      setIsLoading(false);
+      return;
     }
 
-    try {
-        setIsLoading(true);
-        setError('');
-        const token = localStorage.getItem('token');
-        if (!token) {
-            setError('Authentication token not found. Please log in.');
-            setIsLoading(false);
-            return;
+    // Create FormData
+    const formData = new FormData();
+    if (category === 'url') {
+      formData.append('url', newUrl);
+      await axios.post(
+        `${API_URL}/tenants/${activeTenant}/knowledge_base_items/add_url`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
         }
-
-        // Updated logic to call different endpoints based on category
-        if (category === 'url') {
-            const formData = new FormData();
-            formData.append('url', newUrl);
-
-            await axios.post(`${API_URL}/tenants/${activeTenant}/knowledge_base_items/add_url`, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-        } else {
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            formData.append('category', category);
-
-            await axios.post(`${API_URL}/tenants/${activeTenant}/knowledge_base_items/`, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+      );
+    } else if (selectedFile) { // Type guard to ensure selectedFile is not null
+      formData.append('file', selectedFile);
+      formData.append('category', category);
+      await axios.post(
+        `${API_URL}/tenants/${activeTenant}/knowledge_base_items/`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
         }
-
-        // Refresh knowledge base items
-        const itemsRes = await axios.get(`${API_URL}/tenants/${activeTenant}/knowledge_base_items/`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        setKnowledgeBaseItems(itemsRes.data);
-        setNewUrl('');
-        setSelectedFile(null);
-        setCategory('');
-    } catch (err: any) {
-        console.error("Failed to add item:", err.response?.data || err.message);
-        setError('Failed to add item. ' + (err.response?.data?.detail || 'Please try again.'));
-    } finally {
-        setIsLoading(false);
+      );
+    } else {
+      throw new Error('No file selected for file or database category.');
     }
+
+    // Refresh knowledge base items
+    const itemsRes = await axios.get(
+      `${API_URL}/tenants/${activeTenant}/knowledge_base_items/`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    setKnowledgeBaseItems(itemsRes.data);
+    setNewUrl('');
+    setSelectedFile(null);
+    setCategory('');
+ } catch (err: unknown) {
+  if (isAxiosError(err)) {
+    console.error("Failed to add item:", err.response?.data || err.message);
+    setError('Failed to add item. ' + (err.response?.data?.detail || 'Please try again.'));
+  } else {
+    console.error("Failed to add item:", err);
+    setError('Failed to add item. Please try again.');
+  }
+} finally {
+    setIsLoading(false);
+  }
 };
-  
   return (
     <main className="max-w-6xl mx-auto mt-8 p-4">
       <div className="flex justify-between items-center mb-8">
@@ -507,7 +547,9 @@ const handleAddItem = async () => {
               </svg>
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-1">No organizations yet</h3>
-            <p className="text-gray-500">Create your first organization using the "+ New Organization" button above.</p>
+           <p className="text-gray-500">
+  {`Create your first organization using the "+ New Organization" button above.`}
+</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
