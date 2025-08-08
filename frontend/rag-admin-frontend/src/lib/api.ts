@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://ec2-3-110-27-213.ap-south-1.compute.amazonaws.com/api/';
 
 // Updated interface to include new registration fields
 export interface RegisterData {
