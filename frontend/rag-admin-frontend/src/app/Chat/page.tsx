@@ -27,7 +27,7 @@ interface ApiError {
   };
   message?: string;
 }
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://ec2-3-110-27-213.ap-south-1.compute.amazonaws.com/api/';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://ec2-3-110-27-213.ap-south-1.compute.amazonaws.com/api';
 
 export default function Chat() {
   // We no longer need a list of tenants, just the single one for the user
