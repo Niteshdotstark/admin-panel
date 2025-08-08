@@ -272,7 +272,7 @@ export default function Dashboard() {
       setError('');
   };
   // Handler to add a knowledge base item
-const handleAddItem = async () => {
+  const handleAddItem = async () => {
   // Validation
   if (!category) {
     setError('Please select a type.');
@@ -350,7 +350,7 @@ const handleAddItem = async () => {
 } finally {
     setIsLoading(false);
   }
-};
+  };
   return (
     <main className="max-w-6xl mx-auto mt-8 p-4">
       <div className="flex justify-between items-center mb-8">
