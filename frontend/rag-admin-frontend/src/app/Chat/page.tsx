@@ -50,7 +50,7 @@ export default function Chat() {
           return;
         }
 
-        const response = await axios.get(`${API_URL}/tenants`, {
+        const response = await axios.get(`${API_URL}/tenants/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -103,7 +103,7 @@ export default function Chat() {
 
       // Use the tenant's ID from the state for the API call
       const response = await axios.post(
-        `${API_URL}/tenants/${tenant.id}/chat`,
+        `${API_URL}/tenants/${tenant.id}/chat/`,
         { message: inputMessage },
         { headers: { Authorization: `Bearer ${token}` } }
       );

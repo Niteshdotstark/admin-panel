@@ -82,7 +82,7 @@ export default function Dashboard() {
         }
 
         // Fetch tenants
-        const tenantsRes = await axios.get(`${API_URL}/tenants`, {
+        const tenantsRes = await axios.get(`${API_URL}/tenants/`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setTenants(tenantsRes.data);
@@ -302,7 +302,7 @@ export default function Dashboard() {
     if (category === 'url') {
       formData.append('url', newUrl);
       await axios.post(
-        `${API_URL}/tenants/${activeTenant}/knowledge_base_items/add_url`,
+        `${API_URL}/tenants/${activeTenant}/knowledge_base_items/add_url/`,
         formData,
         {
           headers: {
