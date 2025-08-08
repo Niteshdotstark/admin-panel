@@ -2,7 +2,6 @@ from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile, F
 from urllib.parse import unquote
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.utils import get_openapi
 from sqlalchemy.orm import Session
 from database import get_db, engine, Base
 from models import User, Tenant, KnowledgeBaseFile
@@ -25,24 +24,7 @@ import re
 
 
 app = FastAPI(root_path="/api")
-def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-    openapi_schema = get_openapi(
-        title="Your API Title",
-        version="1.0",
-        description="Your API Description",
-        routes=app.routes,
-    )
-    if "servers" in openapi_schema:
-        root_path: str = openapi_schema["servers"][0]["url"]
-        openapi_schema["components"]["securitySchemes"]["OAuth2PasswordBearer"]["flows"]["password"]["tokenUrl"] = (
-            root_path + openapi_schema["components"]["securitySchemes"]["OAuth2PasswordBearer"]["flows"]["password"]["tokenUrl"]
-        )
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
 
-app.openapi = custom_openapi
 
 app.add_middleware(
     CORSMiddleware,
