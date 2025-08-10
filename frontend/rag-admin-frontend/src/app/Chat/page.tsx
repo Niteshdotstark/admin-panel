@@ -27,7 +27,7 @@ interface ApiError {
   };
   message?: string;
 }
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://ec2-65-2-142-83.ap-south-1.compute.amazonaws.com/';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://ec2-65-2-142-83.ap-south-1.compute.amazonaws.com/api/';
 
 export default function Chat() {
   // We no longer need a list of tenants, just the single one for the user
@@ -46,7 +46,7 @@ export default function Chat() {
         const token = localStorage.getItem('token');
         if (!token) {
           setError('Authentication token not found. Please log in.');
-          router.push('/api/login');
+          router.push('/login');
           return;
         }
 
@@ -97,13 +97,13 @@ export default function Chat() {
       const token = localStorage.getItem('token');
       if (!token) {
         setError('Authentication token not found. Please log in.');
-        router.push('/api/login');
+        router.push('/login');
         return;
       }
 
       // Use the tenant's ID from the state for the API call
       const response = await axios.post(
-        `${API_URL}/api/tenants/${tenant.id}/chat/`,
+        `${API_URL}/tenants/${tenant.id}/chat/`,
         { message: inputMessage },
         { headers: { Authorization: `Bearer ${token}` } }
       );
