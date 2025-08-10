@@ -284,7 +284,7 @@ async def create_knowledge_base_item(
     return kb_file
 
 
-@app.post("/tenants/{tenant_id}/knowledge_base_items/add_url", status_code=status.HTTP_201_CREATED)
+@app.post("/tenants/{tenant_id}/knowledge_base_items/add_url/", status_code=status.HTTP_201_CREATED)
 async def add_url_to_file_and_db(
     background_tasks: BackgroundTasks,
     tenant_id: int,
