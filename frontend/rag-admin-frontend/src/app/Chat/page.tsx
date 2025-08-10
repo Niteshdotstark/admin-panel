@@ -75,55 +75,58 @@ export default function Chat() {
   }, [messages]);
 
   const handleSendMessage = async () => {
-    // Check if the tenant is loaded and a message is entered
-    if (!inputMessage.trim() || !tenant) {
-      setError('Please ensure your organization is loaded and enter a message.');
+  if (!inputMessage.trim() || !tenant) {
+    setError('Please ensure your organization is loaded and enter a message.');
+    return;
+  }
+
+  const newMessage: ChatMessage = {
+    id: Math.random().toString(36).substring(2),
+    text: inputMessage,
+    isUser: true,
+    timestamp: new Date().toISOString(),
+  };
+
+  setMessages(prev => [...prev, newMessage]);
+  setInputMessage('');
+  setIsLoading(true);
+  setError('');
+
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('Authentication token not found. Please log in.');
       return;
     }
 
-    const newMessage: ChatMessage = {
+    const response = await axios.post(
+      `${API_URL}/chatbot/ask?tenant_id=${tenant.id}`,
+      { message: newMessage.text },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    const botReply: ChatMessage = {
       id: Math.random().toString(36).substring(2),
-      text: inputMessage,
-      isUser: true,
+      text: response.data.response,
+      isUser: false,
       timestamp: new Date().toISOString(),
+      sources: response.data.sources,
     };
 
-    setMessages([...messages, newMessage]);
-    setInputMessage('');
-    setIsLoading(true);
-    setError('');
+    setMessages(prev => [...prev, botReply]);
+  } catch (err: unknown) {
+    const error = err as ApiError;
+    setError(error.response?.data?.detail || 'Failed to send message.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication token not found. Please log in.');
-        router.push('/login');
-        return;
-      }
-
-      // Use the tenant's ID from the state for the API call
-      const response = await axios.post(
-        `${API_URL}/tenants/${tenant.id}/chat/`,
-        { message: inputMessage },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      const botMessage: ChatMessage = {
-        id: Math.random().toString(36).substring(2),
-        text: response.data.response,
-        isUser: false,
-        timestamp: new Date().toISOString(),
-        sources: response.data.sources,
-      };
-
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (err: unknown) {
-      const error = err as ApiError;
-      setError('Failed to get response. ' + (error.response?.data?.detail || 'Please try again.'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
