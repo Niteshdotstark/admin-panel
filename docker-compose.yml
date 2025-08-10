@@ -29,6 +29,10 @@ services:
     container_name: fastapi-backend
     environment:
       - DATABASE_URI=postgresql://postgres:123@postgres_db:5432/multi_tenant_admin
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-ap-south-1}
+      - HF_API_TOKEN=${HF_API_TOKEN}
     depends_on:
       - postgres_db
       - chroma_db
