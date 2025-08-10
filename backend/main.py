@@ -366,7 +366,7 @@ async def chat_with_tenant_kb(
 
     # Call your RAG model with the provided message and tenant_id
     try:
-        response_data = answer_question_modern(chat_request.message, tenant_id)
+        response_data = answer_question_modern(chat_request.message, tenant_id,1)
         # Ensure the response_data has 'answer' and 'sources' keys
         return ChatResponse(
             response=response_data.get("answer", "No answer found."),
@@ -385,7 +385,7 @@ async def ask_chatbot(
     db: Session = Depends(get_db)
 ):
     # Process the chatbot request
-    response = answer_question_modern(request.message, tenant_id)
+    response = answer_question_modern(request.message, tenant_id,1)
     return {"response": response["answer"], "sources": response["sources"]}
 
 
