@@ -36,7 +36,7 @@ import tldextract
 
 
 # Configuration
-CHROMA_DIR = "../chroma_db"
+CHROMA_DIR = "./chroma_db"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 LLM_MODEL = "meta.llama3-8b-instruct-v1:0"
 HF_API_TOKEN = os.getenv("HF_API_TOKEN", "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")
